@@ -1,51 +1,44 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import streamlit as st
-from streamlit.logger import get_logger
+import os
+import logging
 
-LOGGER = get_logger(__name__)
+# Function to configure logging
+def configure_logging(file_path, level=logging.INFO):
+    logger = logging.getLogger()
+    logger.setLevel(level)
 
+    file_handler = logging.FileHandler(file_path)
+    file_handler.setLevel(level)
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
 
-    st.write("# Welcome to Streamlit! 👋")
+    logger.addHandler(file_handler)
 
-    st.sidebar.success("Select a demo above.")
+    return logger
 
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
+# Function to handle user input and generate response
+def generate_response(question):
+    logging.info(f"Received question: {question}")
+    # Your chatbot logic here
+    answer = "This is the answer to the question."
+    logging.info(f"Generated answer: {answer}")
+    return answer
 
+# Main function
+if __name__ == '__main__':
+    # Configure logging
+    log_file = os.path.join(os.getcwd(), 'chatbot.log')
+    logger = configure_logging(log_file)
 
-if __name__ == "__main__":
-    run()
+    # Streamlit UI
+    st.title("Simple Chatbot")
+    
+    # Text input for user question
+    question = st.text_input("Ask a question:")
+    
+    # Button to trigger chatbot response
+    if st.button("Get Answer"):
+        # Generate and display response
+        answer = generate_response(question)
+        st.write("Answer:", answer)
